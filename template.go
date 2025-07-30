@@ -13,6 +13,9 @@ const (
 	<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
 		<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
 		<Default Extension="xml" ContentType="application/xml"/>
+		<Default Extension="png" ContentType="image/png"/>          
+		<Default Extension="jpg" ContentType="image/jpeg"/>        
+		<Default Extension="jpeg" ContentType="image/jpeg"/>   
 		<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
 		<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
 		<Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
@@ -386,4 +389,42 @@ const (
 		</a:objectDefaults>
 		<a:extraClrSchemeLst/>
 	</a:theme>`
+	TEMP_WORD_STYLE_TNR = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<w:styles xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  	xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  	xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  	xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
+  	xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
+  	xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid"
+  	xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 w16se w16cid">
+  	<w:docDefaults>
+    	<w:rPrDefault>
+      		<w:rPr>
+        	<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman"/>
+        	<w:sz w:val="24"/>
+        	<w:szCs w:val="24"/>
+        	<w:lang w:val="ru-RU" w:eastAsia="zh-TW" w:bidi="ar-SA"/>
+      	</w:rPr>
+    	</w:rPrDefault>
+    	<w:pPrDefault/>
+  		</w:docDefaults>
+  		<w:style w:type="paragraph" w:default="1" w:styleId="a">
+    	<w:name w:val="Normal"/>
+    <w:qFormat/>
+    <w:pPr><w:widowControl w:val="0"/></w:pPr>
+    <w:rPr>
+      <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman"/>
+      <w:szCs w:val="24"/>
+    </w:rPr>
+  </w:style>
+  <w:style w:type="character" w:default="1" w:styleId="a0">
+    <w:name w:val="Default Paragraph Font"/>
+    <w:uiPriority w:val="1"/><w:semiHidden/><w:unhideWhenUsed/>
+  </w:style>
+  <w:style w:type="character" w:styleId="a1">
+    <w:name w:val="Hyperlink"/>
+    <w:basedOn w:val="a0"/><w:uiPriority w:val="99"/><w:unhideWhenUsed/>
+    <w:rPr><w:color w:val="0563C1" w:themeColor="hyperlink"/><w:u w:val="single"/></w:rPr>
+  </w:style>
+	</w:styles>`
 )

@@ -8,11 +8,21 @@ import (
 	"strconv"
 )
 
+type mediaFile struct {
+	path        string
+	contentType string
+	data        []byte
+}
+
 type File struct {
 	Document    Document
 	DocRelation DocRelation
 
-	rId int
+	rId        int
+	imageIndex int
+	media      []mediaFile
+
+	stylesXML string
 }
 
 func NewFile() *File {
@@ -52,13 +62,13 @@ func NewFile() *File {
 			Xmlns:        XMLNS,
 			Relationship: defaultRel,
 		},
-		rId: 4,
+		rId:       4,
+		stylesXML: TEMP_WORD_STYLE,
 	}
 
 	return f
 }
 
-// Save save file to path
 func (f *File) Save(path string) (err error) {
 	fzip, _ := os.Create(path)
 	defer fzip.Close()
@@ -76,7 +86,6 @@ func (f *File) Write(writer io.Writer) (err error) {
 	return f.pack(zipWriter)
 }
 
-// AddParagraph add new paragraph
 func (f *File) AddParagraph() *Paragraph {
 	p := &Paragraph{
 		Data: make([]interface{}, 0),
@@ -102,6 +111,10 @@ func (f *File) addLinkRelation(link string) string {
 	return rel.ID
 }
 
+func (f *File) UseTimesNewRomanDefault() {
+	f.stylesXML = TEMP_WORD_STYLE_TNR
+}
+
 func (f *File) pack(zipWriter *zip.Writer) (err error) {
 	files := map[string]string{}
 
@@ -109,8 +122,10 @@ func (f *File) pack(zipWriter *zip.Writer) (err error) {
 	files["docProps/app.xml"] = TEMP_DOCPROPS_APP
 	files["docProps/core.xml"] = TEMP_DOCPROPS_CORE
 	files["word/theme/theme1.xml"] = TEMP_WORD_THEME_THEME
-	files["word/styles.xml"] = TEMP_WORD_STYLE
+	files["word/styles.xml"] = f.stylesXML
+
 	files["[Content_Types].xml"] = TEMP_CONTENT
+
 	files["word/_rels/document.xml.rels"], err = marshal(f.DocRelation)
 	if err != nil {
 		return err
@@ -125,14 +140,52 @@ func (f *File) pack(zipWriter *zip.Writer) (err error) {
 		if err != nil {
 			return err
 		}
-
-		_, err = w.Write([]byte(data))
-		if err != nil {
+		if _, err = w.Write([]byte(data)); err != nil {
 			return err
 		}
 	}
 
-	return
+	for _, m := range f.media {
+		w, err := zipWriter.Create(m.path)
+		if err != nil {
+			return err
+		}
+		if _, err = w.Write(m.data); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (f *File) addImageRelation(ext string, data []byte) (relID string, filename string) {
+	f.imageIndex++
+	filename = "image" + strconv.Itoa(f.imageIndex) + "." + ext
+	rel := &RelationShip{
+		ID:     "rId" + strconv.Itoa(f.rId),
+		Type:   REL_IMAGE,
+		Target: "media/" + filename,
+	}
+	f.rId++
+
+	f.DocRelation.Relationship = append(f.DocRelation.Relationship, rel)
+	f.media = append(f.media, mediaFile{
+		path:        "word/media/" + filename,
+		contentType: contentTypeByExt(ext),
+		data:        data,
+	})
+	return rel.ID, filename
+}
+
+func contentTypeByExt(ext string) string {
+	switch ext {
+	case "png", "PNG":
+		return "image/png"
+	case "jpg", "JPG", "jpeg", "JPEG":
+		return "image/jpeg"
+	default:
+		return "image/png"
+	}
 }
 
 func marshal(data interface{}) (out string, err error) {

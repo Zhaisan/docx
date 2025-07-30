@@ -1,3 +1,3 @@
-module github.com/gingfrederik/docx
+module github.com/Zhaisan/docx
 
-go 1.13
+go 1.22

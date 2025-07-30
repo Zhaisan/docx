@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/gingfrederik/docx"
+	"github.com/Zhaisan/docx"
 )
 
 func main() {
 	f := docx.NewFile()
-	// add new paragraph
+
 	para := f.AddParagraph()
-	// add text
+
 	para.AddText("test")
 
 	para.AddText("test font size").Size(22)
