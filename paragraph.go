@@ -7,6 +7,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"strconv"
+	"strings"
 )
 
 type Paragraph struct {
@@ -105,7 +106,11 @@ func (p *Paragraph) AddImage(data []byte, ext string, widthPx, heightPx int) *Dr
 		},
 	}
 
-	p.Data = append(p.Data, d)
+	p.Data = append(p.Data, &Run{
+		RunProperties: &RunProperties{},
+		Drawing:       d,
+	})
+
 	return d
 }
 
@@ -209,4 +214,18 @@ func (p *Paragraph) AddImageAuto(data []byte, ext string, maxWidthPx int) *Drawi
 		h = int(float64(h) * scale)
 	}
 	return p.AddImage(data, ext, w, h)
+}
+
+func (p *Paragraph) AddAnyImageAuto(data []byte, ext string, maxWidthPx int) *Drawing {
+	e := strings.ToLower(ext)
+	switch e {
+	case "png", "jpg", "jpeg":
+		return p.AddImageAuto(data, e, maxWidthPx)
+	default:
+		pngData, w, h, err := normalizeToPNG(data, e, maxWidthPx)
+		if err != nil || len(pngData) == 0 {
+			return p.AddImage(data, "png", maxWidthPx, int(float64(maxWidthPx)*0.6))
+		}
+		return p.AddImage(pngData, "png", w, h)
+	}
 }
